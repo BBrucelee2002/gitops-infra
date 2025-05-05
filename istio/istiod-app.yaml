@@ -5,8 +5,6 @@ kind: Application
 metadata:
   name: istiod                      # Name of the Argo CD application
   namespace: argocd                 # Must be deployed in the argocd namespace
-  finalizers:
-    - resources-finalizer.argocd.argoproj.io  # Enables proper cleanup on deletion
 spec:
   project: infrastructure           # References the Argo CD project defined in argocd-project.yaml
   source:
@@ -26,9 +24,3 @@ spec:
       selfHeal: true                # Sync if there's a difference between desired and actual state
     syncOptions:
       - CreateNamespace=true        # Create the namespace if it doesn't exist
-  # Ignore specific differences to prevent constant reconciliation
-  ignoreDifferences:
-    - group: admissionregistration.k8s.io
-      kind: ValidatingWebhookConfiguration
-      jsonPointers:
-        - /webhooks/0/failurePolicy  # Don't sync changes to failure policy
