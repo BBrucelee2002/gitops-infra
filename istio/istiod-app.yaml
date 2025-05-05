@@ -1,0 +1,34 @@
+# Purpose: Defines the Argo CD application for Istio control plane (istiod)
+# This installs the core Istio control plane that manages the service mesh
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: istiod                      # Name of the Argo CD application
+  namespace: argocd                 # Must be deployed in the argocd namespace
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io  # Enables proper cleanup on deletion
+spec:
+  project: infrastructure           # References the Argo CD project defined in argocd-project.yaml
+  source:
+    # Official Istio Helm repository
+    repoURL: https://istio-release.storage.googleapis.com/charts
+    chart: istiod                   # The istiod chart contains the control plane
+    targetRevision: 1.19.0          # Specific chart version for stability
+    helm:
+      valueFiles:
+        - ../istiod-values.yaml     # Path to values file relative to this file
+  destination:
+    server: https://kubernetes.default.svc  # Deploy to the current cluster
+    namespace: istio-system         # Target namespace for Istio components
+  syncPolicy:
+    automated:
+      prune: true                   # Remove resources that are no longer defined
+      selfHeal: true                # Sync if there's a difference between desired and actual state
+    syncOptions:
+      - CreateNamespace=true        # Create the namespace if it doesn't exist
+  # Ignore specific differences to prevent constant reconciliation
+  ignoreDifferences:
+    - group: admissionregistration.k8s.io
+      kind: ValidatingWebhookConfiguration
+      jsonPointers:
+        - /webhooks/0/failurePolicy  # Don't sync changes to failure policy

@@ -1,0 +1,25 @@
+# Purpose: Defines an Argo CD project for grouping infrastructure applications
+# This project has broad permissions to deploy cluster-wide resources
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: infrastructure               # Project name used in application specs
+  namespace: argocd                  # Must be in the argocd namespace
+spec:
+  description: Infrastructure components for the platform  # Human-readable description
+  sourceRepos:
+  - '*'                              # Allow applications to use any repository
+                                     # In production, limit this to specific trusted repos
+  destinations:
+  - namespace: '*'                   # Allow deploying to any namespace
+    server: https://kubernetes.default.svc  # Current cluster
+  
+  # Allow management of cluster-wide resources (like CRDs, ClusterRoles, etc.)
+  clusterResourceWhitelist:
+  - group: '*'                       # Any API group
+    kind: '*'                        # Any resource kind
+  
+  # Allow management of namespace-level resources
+  namespaceResourceWhitelist:
+  - group: '*'                       # Any API group
+    kind: '*'                        # Any resource kind

@@ -1,0 +1,22 @@
+# Purpose: Custom configuration for the Kyverno Helm chart
+
+# Single replica for smaller clusters, increase for high-availability in production
+replicaCount: 1
+
+# Resource allocation for Kyverno controller
+resources:
+  limits:
+    cpu: 1000m                    # Limit CPU usage to 1 core
+    memory: 1Gi                   # Limit memory usage to 1GB
+  requests:
+    cpu: 100m                     # Request 0.1 cores initially
+    memory: 128Mi                 # Request 128MB of memory initially
+
+# Enable Prometheus metrics collection
+serviceMonitor:
+  enabled: true                   # Create ServiceMonitor for Prometheus operator
+  namespace: monitoring           # Place ServiceMonitor in monitoring namespace
+
+# Webhook failure policy - set to Fail to enforce policies strictly
+webhooks:
+  failurePolicy: Fail    

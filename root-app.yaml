@@ -1,0 +1,26 @@
+# Purpose: Root application that uses the App-of-Apps pattern
+# This is the entry point that deploys and manages all infrastructure components
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: infrastructure               # Main application name
+  namespace: argocd                  # Must be in the argocd namespace
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io  # Enables proper cleanup on deletion
+spec:
+  project: infrastructure            # References the Argo CD project defined in argocd-project.yaml
+  source:
+    # Replace with your actual Git repository URL
+    repoURL: https://github.com/yourusername/gitops-infra.git
+    path: .                          # Root directory of the repository
+    directory:
+      recurse: true                  # Look for Kubernetes manifests in subdirectories
+      jsonnet: {}                    # Include empty config for jsonnet support
+      exclude: "*.md"                # Exclude markdown files
+  destination:
+    server: https://kubernetes.default.svc  # Deploy to the current cluster
+    namespace: argocd               # Target namespace for root application
+  syncPolicy:
+    automated:
+      prune: true                   # Remove resources that are no longer defined
+      selfHeal: true                # Sync if there's a difference between desired and actual state

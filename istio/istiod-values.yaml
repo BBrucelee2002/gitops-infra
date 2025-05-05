@@ -1,0 +1,29 @@
+# Purpose: Configuration values for the Istio control plane (istiod)
+# Customizes resource allocation and feature enablement
+
+pilot:
+  # Resource configuration for the istiod component (control plane)
+  resources:
+    requests:
+      cpu: 200m                     # Request 0.2 cores initially
+      memory: 256Mi                 # Request 256MB of memory initially
+    limits:
+      cpu: 500m                     # Limit CPU usage to 0.5 cores
+      memory: 512Mi                 # Limit memory usage to 512MB
+
+# Enable telemetry collection for observability
+telemetry:
+  enabled: true                     # Enable telemetry features
+  v2:
+    enabled: true                   # Use v2 telemetry architecture
+
+global:
+  proxy:
+    # Default resources for the Istio sidecar proxies injected into pods
+    resources:
+      requests:
+        cpu: 100m                   # Request 0.1 cores per sidecar
+        memory: 128Mi               # Request 128MB of memory per sidecar
+      limits:
+        cpu: 500m                   # Limit CPU usage to 0.5 cores per sidecar
+        memory: 256Mi               # Limit memory usage to 256MB per sidecar

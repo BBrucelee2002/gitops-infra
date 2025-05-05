@@ -1,0 +1,28 @@
+# Purpose: Configuration values for the Istio gateway component
+# Customizes service type, exposed ports, resources, and autoscaling
+
+service:
+  type: LoadBalancer                # Expose gateway via cloud provider's load balancer
+  ports:
+  - name: http2                     # HTTP/2 traffic
+    port: 80                        # External port
+    targetPort: 80                  # Internal port
+  - name: https                     # HTTPS traffic
+    port: 443                       # External port
+    targetPort: 443                 # Internal port
+
+# Resource allocation for gateway pods
+resources:
+  requests:
+    cpu: 100m                       # Request 0.1 cores initially
+    memory: 128Mi                   # Request 128MB of memory initially
+  limits:
+    cpu: 2000m                      # Limit CPU usage to 2 cores
+    memory: 1024Mi                  # Limit memory usage to 1GB
+
+# Horizontal Pod Autoscaler configuration
+autoscaling:
+  enabled: true                     # Enable autoscaling for the gateway
+  minReplicas: 2                    # Minimum number of gateway replicas
+  maxReplicas: 5                    # Maximum number of gateway replicas
+  targetCPUUtilizationPercentage: 80  # Scale up when CPU reaches 80%

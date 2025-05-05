@@ -1,0 +1,32 @@
+# Purpose: Security policy to ensure containers only use trusted image sources
+# This prevents usage of potentially malicious images from untrusted sources
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: restrict-image-registries
+  annotations:
+    policies.kyverno.io/title: Restrict Image Registries  
+    policies.kyverno.io/category: Security               # Security-focused policy
+    policies.kyverno.io/severity: high                   # High severity - critical for security
+    policies.kyverno.io/subject: Pod
+    policies.kyverno.io/description: >-
+      Restricts container images to come from trusted registries only.
+spec:
+  validationFailureAction: enforce                       # Block non-compliant resources
+  rules:
+  - name: validate-registries
+    match:
+      resources:
+        kinds:
+        - Pod                                            # Apply to all Pod resources
+    validate:
+      message: "Images must come from trusted registries"
+      pattern:
+        spec:
+          containers:
+          # Only allow images from these trusted registries:
+          # - docker.io (Docker Hub)
+          # - gcr.io (Google Container Registry)
+          # - quay.io (Red Hat Quay)
+          # - k8s.gcr.io (Kubernetes Registry)
+          - image: "{{ regex_match('(docker.io|gcr.io|quay.io|k8s.gcr.io)/.*', '@') }}"

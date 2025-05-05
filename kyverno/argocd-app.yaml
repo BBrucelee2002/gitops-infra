@@ -1,0 +1,27 @@
+# Purpose: Defines the Argo CD application for Kyverno policy engine
+# This application will install Kyverno using its official Helm chart
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kyverno                     # Name of the Argo CD application
+  namespace: argocd                 # Must be deployed in the argocd namespace
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io  # Enables proper cleanup on deletion
+spec:
+  project: infrastructure           # References the Argo CD project defined in argocd-project.yaml
+  source:
+    repoURL: https://kyverno.github.io/kyverno/  # Helm chart repository URL
+    chart: kyverno                  # Name of the Helm chart
+    targetRevision: 2.7.2           # Specific chart version for stability
+    helm:
+      valueFiles:
+        - ../values.yaml            # Path to the values file relative to this file
+  destination:
+    server: https://kubernetes.default.svc  # Deploy to the current cluster
+    namespace: kyverno              # Target namespace for Kyverno
+  syncPolicy:
+    automated:
+      prune: true                   # Remove resources that are no longer defined
+      selfHeal: true                # Sync if there's a difference between desired and actual state
+    syncOptions:
+      - CreateNamespace=true        # Create the kyverno namespace if it doesn't exist

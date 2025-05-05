@@ -1,0 +1,44 @@
+# Purpose: Configuration values for the Prometheus monitoring stack
+# Customizes resource allocation, retention, storage, and dashboard settings
+
+prometheus:
+  prometheusSpec:
+    retention: 7d                   # Keep metrics data for 7 days
+    resources:
+      limits:
+        cpu: 1000m                  # Limit CPU usage to 1 core
+        memory: 2Gi                 # Limit memory usage to 2GB
+      requests:
+        cpu: 200m                   # Request 0.2 cores initially
+        memory: 1Gi                 # Request 1GB of memory initially
+  
+alertmanager:
+  alertmanagerSpec:
+    storage:
+      # Persistent storage for alert history
+      volumeClaimTemplate:
+        spec:
+          accessModes: ["ReadWriteOnce"]  # Single-node read/write access
+          resources:
+            requests:
+              storage: 10Gi         # 10GB of persistent storage
+
+grafana:
+  adminPassword: prom-operator      # Default admin password (CHANGE IN PRODUCTION!)
+  persistence:
+    enabled: true                   # Enable persistent storage for dashboards/settings
+    size: 10Gi                      # 10GB of persistent storage
+  
+  # Configure dashboard providers for Grafana
+  dashboardProviders:
+    dashboardproviders.yaml:
+      apiVersion: 1
+      providers:
+      - name: 'default'             # Name of the dashboard provider
+        orgId: 1                    # Organization ID
+        folder: ''                  # Root folder
+        type: file                  # Load dashboards from files
+        disableDeletion: false      # Allow dashboard deletion
+        editable: true              # Allow dashboard editing
+        options:
+          path: /var/lib/grafana/dashboards/default  # Dashboard file location

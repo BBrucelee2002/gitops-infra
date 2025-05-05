@@ -1,0 +1,30 @@
+# Purpose: Defines the Argo CD application for the Prometheus monitoring stack
+# This deploys Prometheus, Alertmanager, and Grafana as a complete monitoring solution
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: prometheus                  # Name of the Argo CD application
+  namespace: argocd                 # Must be deployed in the argocd namespace
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io  # Enables proper cleanup on deletion
+spec:
+  project: infrastructure           # References the Argo CD project defined in argocd-project.yaml
+  source:
+    # Official Prometheus community Helm repository
+    repoURL: https://prometheus-community.github.io/helm-charts
+    # kube-prometheus-stack includes Prometheus, Alertmanager, node-exporter, and Grafana
+    chart: kube-prometheus-stack
+    targetRevision: 45.0.0          # Specific chart version for stability
+    helm:
+      valueFiles:
+        - ../values.yaml            # Path to values file relative to this file
+  destination:
+    server: https://kubernetes.default.svc  # Deploy to the current cluster
+    namespace: monitoring           # Target namespace for the Prometheus stack
+  syncPolicy:
+    automated:
+      prune: true                   # Remove resources that are no longer defined
+      selfHeal: true                # Sync if there's a difference between desired and actual state
+    syncOptions:
+      - CreateNamespace=true        # Create the monitoring namespace if it doesn't exist
+
