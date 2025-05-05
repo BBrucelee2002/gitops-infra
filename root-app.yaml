@@ -11,7 +11,7 @@ spec:
   project: infrastructure            # References the Argo CD project defined in argocd-project.yaml
   source:
     # Replace with your actual Git repository URL
-    repoURL: https://github.com/yourusername/gitops-infra.git
+    repoURL: https://github.com/BBrucelee2002/gitops-infra.git
     path: .                          # Root directory of the repository
     directory:
       recurse: true                  # Look for Kubernetes manifests in subdirectories
