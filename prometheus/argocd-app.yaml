@@ -17,7 +17,7 @@ spec:
     targetRevision: 45.0.0          # Specific chart version for stability
     helm:
       valueFiles:
-        - ../values.yaml            # Path to values file relative to this file
+        -values.yaml            # Path to values file relative to this file
   destination:
     server: https://kubernetes.default.svc  # Deploy to the current cluster
     namespace: monitoring           # Target namespace for the Prometheus stack
