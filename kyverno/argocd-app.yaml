@@ -15,7 +15,7 @@ spec:
     targetRevision: 2.7.2           # Specific chart version for stability
     helm:
       valueFiles:
-        - ../values.yaml            # Path to the values file relative to this file
+        - values.yaml            # Path to the values file relative to this file
   destination:
     server: https://kubernetes.default.svc  # Deploy to the current cluster
     namespace: kyverno              # Target namespace for Kyverno

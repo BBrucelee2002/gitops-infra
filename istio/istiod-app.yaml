@@ -14,7 +14,7 @@ spec:
     targetRevision: 1.19.0          # Specific chart version for stability
     helm:
       valueFiles:
-        - ../istiod-values.yaml     # Path to values file relative to this file
+        - istiod-values.yaml     # Path to values file relative to this file
   destination:
     server: https://kubernetes.default.svc  # Deploy to the current cluster
     namespace: istio-system         # Target namespace for Istio components
