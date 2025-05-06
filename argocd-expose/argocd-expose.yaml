@@ -1,0 +1,44 @@
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: argocd-gateway
+  namespace: istio-ingress
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+  - port:
+      number: 443
+      name: https
+      protocol: HTTPS
+    tls:
+      mode: SIMPLE
+      credentialName: argocd-tls  # Create this secret separately
+    hosts:
+    - "aef95924ef6644d818443793c1f9f3cc-1586769373.us-west-2.elb.amazonaws.com"  # Replace with your actual domain
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: argocd-vs
+  namespace: argocd
+spec:
+  hosts:
+  - "aef95924ef6644d818443793c1f9f3cc-1586769373.us-west-2.elb.amazonaws.com"  # Replace with your actual domain
+  gateways:
+  - istio-ingress/argocd-gateway
+  http:
+  - match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        host: argocd-server.argocd.svc.cluster.local
+        port:
+          number: 443
+    rewrite:
+      uri: /
+    headers:
+      request:
+        set:
+          x-forwarded-proto: https
