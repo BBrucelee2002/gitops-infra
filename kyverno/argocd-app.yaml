@@ -25,3 +25,5 @@ spec:
       selfHeal: true                # Sync if there's a difference between desired and actual state
     syncOptions:
       - CreateNamespace=true        # Create the kyverno namespace if it doesn't exist
+      - ServerSideApply=true   # Enables server-side apply to avoid annotation size limit
+
