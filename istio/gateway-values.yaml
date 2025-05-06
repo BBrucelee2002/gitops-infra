@@ -23,6 +23,6 @@ resources:
 # Horizontal Pod Autoscaler configuration
 autoscaling:
   enabled: true                     # Enable autoscaling for the gateway
-  minReplicas: 2                    # Minimum number of gateway replicas
-  maxReplicas: 5                    # Maximum number of gateway replicas
+  minReplicas: 0                    # Minimum number of gateway replicas
+  maxReplicas: 1                   # Maximum number of gateway replicas
   targetCPUUtilizationPercentage: 80  # Scale up when CPU reaches 80%
