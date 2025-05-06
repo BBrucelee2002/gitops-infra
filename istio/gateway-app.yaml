@@ -16,7 +16,7 @@ spec:
     targetRevision: 1.19.0          # Specific chart version for stability
     helm:
       valueFiles:
-        - ../gateway-values.yaml    # Path to values file relative to this file
+        - gateway-values.yaml    # Path to values file relative to this file
   destination:
     server: https://kubernetes.default.svc  # Deploy to the current cluster
     namespace: istio-ingress        # Target namespace for Istio gateway components
