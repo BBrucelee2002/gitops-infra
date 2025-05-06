@@ -19,4 +19,4 @@ serviceMonitor:
 
 # Webhook failure policy - set to Fail to enforce policies strictly
 webhooks:
-  failurePolicy: Fail    
+  failurePolicy: Ignore    
