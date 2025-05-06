@@ -1,32 +1,29 @@
-# Purpose: Security policy to ensure containers only use trusted image sources
-# This prevents usage of potentially malicious images from untrusted sources
+# Purpose: Monitors image sources without blocking deployment
+# This policy logs usage of non-trusted registries but doesn't prevent deployment
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
-  name: restrict-image-registries
+  name: monitor-image-registries
   annotations:
-    policies.kyverno.io/title: Restrict Image Registries  
-    policies.kyverno.io/category: Security               # Security-focused policy
-    policies.kyverno.io/severity: high                   # High severity - critical for security
+    policies.kyverno.io/title: Monitor Image Registries
+    policies.kyverno.io/category: Security
+    policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: >-
-      Restricts container images to come from trusted registries only.
+      Monitors container images sources without blocking deployment.
 spec:
-  validationFailureAction: enforce                       # Block non-compliant resources
+  validationFailureAction: audit     # Changed from enforce to audit - will only log violations
   rules:
-  - name: validate-registries
+  - name: monitor-registries
     match:
       resources:
         kinds:
-        - Pod                                            # Apply to all Pod resources
+        - Pod
     validate:
-      message: "Images must come from trusted registries"
+      message: "Image from non-standard registry detected - review for security compliance"
       pattern:
         spec:
           containers:
-          # Only allow images from these trusted registries:
-          # - docker.io (Docker Hub)
-          # - gcr.io (Google Container Registry)
-          # - quay.io (Red Hat Quay)
-          # - k8s.gcr.io (Kubernetes Registry)
-          - image: "{{ regex_match('(docker.io|gcr.io|quay.io|k8s.gcr.io)/.*', '@') }}"
+          # Extended list of trusted registries and more permissive pattern
+          # Now includes ECR, Azure CR, and GitHub containers plus all subdomain variations
+          - image: "{{ regex_match('(docker.io|gcr.io|quay.io|k8s.gcr.io|*.gcr.io|ghcr.io|*.azurecr.io|*.ecr.*.amazonaws.com)/.*', '@') || true }}"

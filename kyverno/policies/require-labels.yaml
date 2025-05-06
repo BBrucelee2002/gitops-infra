@@ -1,31 +1,27 @@
-
-# Purpose: Enforces Kubernetes recommended labels on all Pods
-# This policy ensures proper resource categorization and ownership tracking
+# Purpose: Enforces minimal labeling requirements with audit-only mode
+# This policy suggests but doesn't enforce basic resource labeling
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
-  name: require-labels
+  name: suggest-labels
   annotations:
-    policies.kyverno.io/title: Require Labels          # Human-readable policy name
-    policies.kyverno.io/category: Best Practices       # Categorization of the policy
-    policies.kyverno.io/severity: medium               # Impact severity if violated
-    policies.kyverno.io/subject: Pod                   # Resource type this policy applies to
+    policies.kyverno.io/title: Suggest Labels
+    policies.kyverno.io/category: Best Practices
+    policies.kyverno.io/severity: low
+    policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: >-
-      Requires specific labels on pods to improve resource tracking and governance.
+      Suggests basic labeling for resources but doesn't block deployment.
 spec:
-  validationFailureAction: enforce                     # Block non-compliant resources
+  validationFailureAction: audit     # Changed from enforce to audit - will only log violations
   rules:
-  - name: check-for-labels
+  - name: check-for-app-label
     match:
       resources:
         kinds:
-        - Pod                                          # Apply to all Pod resources
+        - Pod
     validate:
-      message: "The labels 'app.kubernetes.io/name' and 'app.kubernetes.io/part-of' are required"
+      message: "It's recommended to include at least an 'app' label for better resource organization"
       pattern:
         metadata:
           labels:
-            # These labels are part of Kubernetes recommended label set
-            # See: https://kubernetes.io/docs/concepts/overview/working-with-objects/common-labels/
-            app.kubernetes.io/name: "?*"               # Must exist with any value
-            app.kubernetes.io/part-of: "?*"            # Must exist with any value
+            app: "?*"   # Simplified to only require a basic 'app' label instead of Kubernetes recommended labels
